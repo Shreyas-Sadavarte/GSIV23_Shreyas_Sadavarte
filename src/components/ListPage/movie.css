@@ -1,0 +1,17 @@
+.custom-card {
+    width: 250px;
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+}
+
+.movie-card {
+    cursor: pointer;
+}
+
+.movie-card:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease-in-out;
+}
