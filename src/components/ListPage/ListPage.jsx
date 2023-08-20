@@ -69,7 +69,7 @@ function ListPage() {
             const scrollTop = document.documentElement.scrollTop;
             const scrollHeight = document.documentElement.scrollHeight;
             const clientHeight = document.documentElement.clientHeight;
-            if (scrollTop + clientHeight >= scrollHeight) {
+            if (scrollTop + clientHeight >= (scrollHeight - 10)) {
                 page.current = page.current + 1;
                 if (search) {
                     dispatch(
