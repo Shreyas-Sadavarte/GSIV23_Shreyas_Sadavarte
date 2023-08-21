@@ -8,12 +8,13 @@ import debounce from "lodash/debounce";
 import { useNavigate } from "react-router-dom";
 import "./movie.css";
 import { setSearchResults } from "./listPageSlice";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 let search = "";
 function ListPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { loading, error, data, searchQuery, searchResults } = useSelector(
+    const { data, searchQuery, searchResults } = useSelector(
         (state) => state.data
     );
     const page = useRef(1);
@@ -51,43 +52,24 @@ function ListPage() {
         );
     });
 
-    const debounce1 = (func) => {
-        let timer;
-        return function (...args) {
-            const context = this;
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(() => {
-                timer = null;
-                func.apply(context, args);
-            }, 500);
-        };
-    };
-
     const handleScroll = (e) => {
         // Load more items when the user reaches the bottom of the page
-        if (!loading) {
-            const scrollTop = document.documentElement.scrollTop;
-            const scrollHeight = document.documentElement.scrollHeight;
-            const clientHeight = document.documentElement.clientHeight;
-            if (scrollTop + clientHeight >= scrollHeight - 50) {
-                page.current = page.current + 1;
-                if (search) {
-                    dispatch(
-                        searchMovie({
-                            loadMore: true,
-                            searchQuery: search,
-                            page: page.current,
-                        })
-                    );
-                } else {
-                    dispatch(
-                        getUpcomingMovies({
-                            loadMore: true,
-                            page: page.current,
-                        })
-                    );
-                }
-            }
+        page.current = page.current + 1;
+        if (search) {
+            dispatch(
+                searchMovie({
+                    loadMore: true,
+                    searchQuery: search,
+                    page: page.current,
+                })
+            );
+        } else {
+            dispatch(
+                getUpcomingMovies({
+                    loadMore: true,
+                    page: page.current,
+                })
+            );
         }
     };
 
@@ -103,12 +85,6 @@ function ListPage() {
                 getUpcomingMovies({ loadMore: false, page: page.current })
             );
         }
-        window.addEventListener("scroll", debounce1(handleScroll));
-
-        return () => {
-            // Remove the scroll event listener when the component unmounts
-            window.removeEventListener("scroll", handleScroll);
-        };
     }, [searchQuery]);
 
     return (
@@ -116,44 +92,53 @@ function ListPage() {
             container
             style={{
                 display: "flex",
-                justifyContent: "space-around",
-                alignItems: "center",
-                alignContent: "center",
+                flexDirection: "column",
             }}
         >
-            {(searchQuery ? searchResults : data).map((card, index) => (
-                <Grid
-                    onClick={() => {
-                        navigate(`/details/${card.id}`);
-                    }}
-                    className="movie-card"
-                    key={index}
-                >
-                    <Movie
-                        rating={card.vote_average}
-                        description={card.overview}
-                        img={card.backdrop_path}
-                        key={index} // Ensure each card has a unique key
-                        title={card.title}
-                        content={card.content}
-                    />
-                </Grid>
-            ))}
-
-            {loading && page.current != 1 && (
+            <InfiniteScroll
+                dataLength={searchQuery ? searchResults.length : data.length}
+                next={handleScroll}
+                hasMore={true}
+                loader={
+                    <h4>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {" "}
+                            <CircularProgress />
+                        </div>
+                    </h4>
+                }
+            >
                 <Grid
                     item
-                    xs={12}
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        justifyItems: "center",
-                    }}
+                    container
+                    sx={{ direction: "row", justifyContent: "space-around" }}
                 >
-                    <CircularProgress />{" "}
+                    {(searchQuery ? searchResults : data).map((card, index) => (
+                        <Grid
+                            onClick={() => {
+                                navigate(`/details/${card.id}`);
+                            }}
+                            className="movie-card"
+                            key={index}
+                            item
+                        >
+                            <Movie
+                                rating={card.vote_average}
+                                description={card.overview}
+                                img={card.backdrop_path}
+                                key={index} // Ensure each card has a unique key
+                                title={card.title}
+                                content={card.content}
+                            />
+                        </Grid>
+                    ))}
                 </Grid>
-            )}
+            </InfiniteScroll>
         </Grid>
     );
 }

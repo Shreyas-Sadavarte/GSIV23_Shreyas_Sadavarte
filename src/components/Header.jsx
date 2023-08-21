@@ -59,6 +59,9 @@ export default function Header() {
     const { searchQuery } = useSelector((state) => state.data);
     const navigate = useNavigate();
     const value = searchParams.get("search");
+    const inDetailsScreen = window.location.pathname.includes("/details")
+        ? true
+        : false;
 
     React.useEffect(() => {
         if (value) dispatch(setSearchQuery(value));
@@ -68,13 +71,13 @@ export default function Header() {
         <Box sx={{ flexGrow: 1, marginBottom: "100px" }}>
             <AppBar style={{ background: "#242424" }}>
                 <Toolbar>
-                    <Grid container spacing={2}>
+                    <Grid container>
                         <Grid
                             item
-                            flexDirection="column"
+                            xs={inDetailsScreen ? 6 : 3}
                             sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                             }}
                         >
@@ -84,57 +87,52 @@ export default function Header() {
                         </Grid>
                         <Grid
                             item
-                            xs={10}
+                            xs={6}
                             sx={{
                                 display: "flex",
-                                justifyContent: "center",
                                 alignItems: "center",
-                                width: "100%",
+                                justifyContent: "center",
                             }}
                         >
-                            {!window.location.pathname.includes("/details") ? (
-                                <Grid container justifyContent="center">
-                                    <Grid>
-                                        {/* Content for the second grid */}
-                                        <Search>
-                                            <SearchIconWrapper>
-                                                <SearchIcon />
-                                            </SearchIconWrapper>
-                                            <StyledInputBase
-                                                onChange={(e) => {
-                                                    setSearchParams({
-                                                        search: e.target.value,
-                                                    });
-                                                    dispatch(
-                                                        setSearchQuery(
-                                                            e.target.value
-                                                        )
-                                                    );
-                                                }}
-                                                endAdornment={
-                                                    <Button
-                                                        onClick={() => {
-                                                            setSearchParams("");
-                                                            dispatch(
-                                                                setSearchQuery(
-                                                                    ""
-                                                                )
-                                                            );
-                                                        }}
-                                                    >
-                                                        <InputAdornment position="start">
-                                                            <ClearIcon />
-                                                        </InputAdornment>
-                                                    </Button>
-                                                }
-                                                value={searchQuery}
-                                                placeholder="Search Movies"
-                                                inputProps={{
-                                                    "aria-label": "search",
-                                                }}
-                                            />
-                                        </Search>
-                                    </Grid>
+                            {!inDetailsScreen ? (
+                                <Grid item justifyContent="center">
+                                    {/* Content for the second grid */}
+                                    <Search>
+                                        <SearchIconWrapper>
+                                            <SearchIcon />
+                                        </SearchIconWrapper>
+                                        <StyledInputBase
+                                            onChange={(e) => {
+                                                setSearchParams({
+                                                    search: e.target.value,
+                                                });
+                                                dispatch(
+                                                    setSearchQuery(
+                                                        e.target.value
+                                                    )
+                                                );
+                                            }}
+                                            endAdornment={
+                                                <Button
+                                                    onClick={() => {
+                                                        setSearchParams("");
+                                                        dispatch(
+                                                            setSearchQuery("")
+                                                        );
+                                                    }}
+                                                >
+                                                    <InputAdornment position="start">
+                                                        <ClearIcon />
+                                                    </InputAdornment>
+                                                </Button>
+                                            }
+                                            value={searchQuery}
+                                            placeholder="Search Movies"
+                                            inputProps={{
+                                                "aria-label": "search",
+                                            }}
+                                        />
+                                    </Search>
                                 </Grid>
                             ) : (
                                 <Grid
@@ -145,13 +143,15 @@ export default function Header() {
                                 >
                                     <Button
                                         onClick={() => {
-                                            if (searchQuery)
-                                                navigate(
-                                                    `/?search=${searchQuery}`
-                                                );
-                                            else {
-                                                navigate(`/`);
-                                            }
+                                            React.useCallback(() => {
+                                                if (searchQuery)
+                                                    navigate(
+                                                        `/?search=${searchQuery}`
+                                                    );
+                                                else {
+                                                    navigate(`/`);
+                                                }
+                                            }, []);
                                         }}
                                     >
                                         <HomeIcon />
