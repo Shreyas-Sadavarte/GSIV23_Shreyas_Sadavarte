@@ -8,7 +8,6 @@ This README provides an overview of the Movie List Web Application, which allows
 2. [Features](#features)
 3. [What Went Well](#what-went-well)
 4. [Room for Improvement](#room-for-improvement)
-5. [Feedback](#feedback)
 
 ## Getting Started
 
