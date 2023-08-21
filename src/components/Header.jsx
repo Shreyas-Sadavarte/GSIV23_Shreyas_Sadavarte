@@ -143,15 +143,13 @@ export default function Header() {
                                 >
                                     <Button
                                         onClick={() => {
-                                            React.useCallback(() => {
-                                                if (searchQuery)
-                                                    navigate(
-                                                        `/?search=${searchQuery}`
-                                                    );
-                                                else {
-                                                    navigate(`/`);
-                                                }
-                                            }, []);
+                                            if (searchQuery)
+                                                navigate(
+                                                    `/?search=${searchQuery}`
+                                                );
+                                            else {
+                                                navigate(`/`);
+                                            }
                                         }}
                                     >
                                         <HomeIcon />
